@@ -141,5 +141,3 @@ class jsonpart(jsonfileclass):
      
   
   
-file = jsonfileclass("save.json") 
-file["ligma"]["wow"]["bob"] = "amongus"
