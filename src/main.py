@@ -56,10 +56,38 @@ class jsonfileclass():
     return jsonpart(self.filedir, [item])
   def __setitem__(self, item, value):
     self.openfile()
-
-    
     self.dict[item] = value
     self.overwrite(self.dict)
+  def remove(self, keys):
+    keys2 = keys
+    self.openfile()
+    for i in keys:
+      part = self.dict
+      for i in keys2[:-1]:
+        part = part[i]
+      if keys2[-1] == keys[-1]:
+        del part[keys2[-1]]
+      else:
+        part[keys2[-1]] = part2
+      part2 = part
+      keys2 = keys2[:-1]
+    self.overwrite(part)
+  def __delitem__(self, item):
+    self.openfile()
+    del self.dict[item] 
+    print(self.dict)
+    self.overwrite(self.dict)
+  def backup(self, backupfiledir):
+    self.openfile()
+    f = open(backupfiledir, "w")
+    json.dump(self.dict, f)
+    f.close()
+  def revert(self, backupfiledir):
+    f = open(backupfiledir, "r")
+    file = json.load(f)
+    f.overwrite(file)
+    
+    
 class jsonpart(jsonfileclass):
   def __init__(self, filedir, index:list):
     self.keys = index
@@ -71,6 +99,7 @@ class jsonpart(jsonfileclass):
       part = part[i]
     self.dict = part
     f.close()
+    return(self.dict)
   def overwrite(self, value):
     keys2 = self.keys
     for i in self.keys:
@@ -92,10 +121,32 @@ class jsonpart(jsonfileclass):
     indexitems= self.keys
     indexitems.append(item)
     return jsonpart(self.filedir, indexitems)
-  def __setitem__(self, item, value):
+  def backup(self, backupfiledir):
+    keys2 = self.keys
+    print(keys2)
     self.openfile()
-    self.dict[item] = value
-    self.overwrite(self.dict)
-     
-  
-  
+    f = open(backupfiledir, "r")
+    backupdict= json.load(f)
+    f.close()
+    for i in self.keys:
+      part = backupdict
+      for i in keys2[:-1]:
+
+        part = part[i]
+      if keys2[-1] == self.keys[-1]:
+        part[keys2[-1]] = self.openfile()
+      else:
+        part[keys2[-1]] = part2
+      part2 = part
+      keys2 = keys2[:-1]
+    f = open(backupfiledir, "w")
+    json.dump(part, f)
+    f.close()
+  def revert(self, backupfiledir):
+    f = open(backupfiledir, "r")
+    backupdict= json.load(f)
+    f.close()
+    part = backupdict
+    for i in self.keys:
+      part = part[i]
+    self.overwrite(part)
